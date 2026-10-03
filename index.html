@@ -35,6 +35,7 @@
             object-fit: cover;
             z-index: 0;
             display: none;
+            pointer-events: none;
         }
 
         #canvas-container {
@@ -47,31 +48,34 @@
             will-change: transform;
         }
 
-        /* 首次命名儀式彈窗 */
+        /* 首次命名儀式彈窗 (最高優先級與穿透防護) */
         #naming-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 100;
+            z-index: 9999 !important;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle at center, rgba(10, 15, 30, 0.96) 0%, rgba(2, 2, 8, 0.98) 100%);
-            backdrop-filter: blur(15px);
-            transition: opacity 0.8s ease;
+            background: radial-gradient(circle at center, rgba(10, 15, 30, 0.98) 0%, rgba(2, 2, 8, 0.99) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: opacity 0.6s ease;
+            pointer-events: auto !important;
         }
 
         .naming-card {
             width: 86%;
             max-width: 330px;
             padding: 32px 24px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(147, 197, 253, 0.35);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(147, 197, 253, 0.45);
             border-radius: 26px;
             text-align: center;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8), 0 0 25px rgba(96, 165, 250, 0.2);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9), 0 0 30px rgba(96, 165, 250, 0.25);
+            pointer-events: auto !important;
         }
 
         .naming-card h1 {
@@ -93,31 +97,41 @@
             width: 100%;
             padding: 13px;
             border-radius: 30px;
-            border: 1px solid rgba(147, 197, 253, 0.4);
-            background: rgba(15, 23, 42, 0.6);
+            border: 1.5px solid rgba(147, 197, 253, 0.5);
+            background: rgba(15, 23, 42, 0.8);
             color: #ffffff;
             font-size: 1.05rem;
             text-align: center;
             outline: none;
             margin-bottom: 20px;
+            pointer-events: auto !important;
+            -webkit-user-select: auto;
+            user-select: auto;
         }
 
         #name-input:focus {
             border-color: #60a5fa;
-            box-shadow: 0 0 15px rgba(96, 165, 250, 0.5);
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.6);
         }
 
         #enter-btn {
             width: 100%;
-            padding: 13px;
+            padding: 14px;
             border-radius: 30px;
             border: none;
             background: linear-gradient(135deg, #2563eb, #7c3aed);
             color: #ffffff;
-            font-size: 1rem;
+            font-size: 1.02rem;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 18px rgba(37, 99, 235, 0.5);
+            box-shadow: 0 4px 18px rgba(37, 99, 235, 0.6);
+            pointer-events: auto !important;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        #enter-btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
         }
 
         /* 頂部極簡標題 (融色無雜項) */
@@ -222,6 +236,7 @@
             border-radius: 36px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
             max-width: 82vw;
+            pointer-events: auto;
         }
 
         .dock-btn {
@@ -275,6 +290,7 @@
             cursor: pointer;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(244, 114, 182, 0.3);
             transition: transform 0.2s, background 0.2s;
+            pointer-events: auto;
         }
 
         #recenter-fab:active {
@@ -282,7 +298,7 @@
             background: rgba(30, 58, 138, 0.8);
         }
 
-        /* 📷 / 🧭 觀星模式選擇彈窗 (AR 相機 vs 陀螺儀) */
+        /* 📷 / 🧭 觀星模式選擇彈窗 */
         #mode-select-modal {
             position: fixed;
             top: 0;
@@ -577,7 +593,7 @@
     <video id="ar-camera-video" playsinline autoplay muted></video>
     <div id="canvas-container"></div>
 
-    <!-- 首次命名介面 -->
+    <!-- 首次命名介面 (最高優先層級) -->
     <div id="naming-modal">
         <div class="naming-card">
             <h1>✨ 專屬星空註冊</h1>
@@ -627,7 +643,7 @@
         </div>
     </div>
 
-    <!-- 觀星模式選擇彈窗 (AR 相機 vs 全景陀螺儀) -->
+    <!-- 觀星模式選擇彈窗 -->
     <div id="mode-select-modal" class="hidden">
         <div class="mode-select-card">
             <h3 style="font-size: 1.1rem; color: #e0f2fe; margin-bottom: 6px;">✨ 選擇尋星模式</h3>
@@ -794,7 +810,6 @@
         let currentCityName = "香港";
         let currentTimezoneOffset = 8; 
 
-        // 當前模式: '3d' | 'ar' | 'gyro'
         let activeViewMode = '3d';
         let cameraStream = null;
 
@@ -928,7 +943,7 @@
             clickableStarMeshes.push(mesh);
         });
 
-        // --- 3. 視角旋轉與全景手勢 ---
+        // --- 3. 視角旋轉與手勢 ---
         let currentPitch = 0, currentYaw = 0;
         let targetPitch = 0, targetYaw = 0;
         let isInteracting = false;
@@ -1074,7 +1089,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // --- 5. 命名流程 ---
+        // --- 5. 命名流程 (徹底修復確認按鈕點擊無反應) ---
         const namingModal = document.getElementById('naming-modal');
         const hudTop = document.getElementById('hud-top');
         const bottomDock = document.getElementById('bottom-dock');
@@ -1086,13 +1101,35 @@
         const sheetStarName = document.getElementById('sheet-star-name');
 
         let currentStarName = "Jodi";
-        const savedName = localStorage.getItem('jodi_star_name');
-        if (savedName) setupUserStar(savedName);
 
-        enterBtn.addEventListener('click', () => {
-            const chosen = nameInput.value.trim() || 'Jodi';
+        // 如果之前有存過名字，先預填在輸入框中，但仍展示彈窗讓使用者體驗
+        const savedName = localStorage.getItem('jodi_star_name');
+        if (savedName) {
+            nameInput.value = savedName;
+        }
+
+        // 核心點擊確認邏輯
+        function handleConfirmName(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            const chosen = (nameInput.value && nameInput.value.trim()) ? nameInput.value.trim() : 'Jodi';
             localStorage.setItem('jodi_star_name', chosen);
             setupUserStar(chosen);
+        }
+
+        // 綁定點擊與手機端原生觸控
+        enterBtn.addEventListener('click', handleConfirmName, { passive: false });
+        enterBtn.addEventListener('touchend', handleConfirmName, { passive: false });
+
+        // 支援鍵盤「前往/完成」鍵
+        nameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                nameInput.blur();
+                handleConfirmName(e);
+            }
         });
 
         function setupUserStar(name) {
@@ -1136,13 +1173,11 @@
             modeSelectModal.classList.add('hidden');
         });
 
-        // 選擇 1: AR 鏡頭透視模式
         optModeAr.addEventListener('click', async () => {
             modeSelectModal.classList.add('hidden');
             await startARCameraMode();
         });
 
-        // 選擇 2: 全景陀螺儀實景模式 (完全免相機權限)
         optModeGyro.addEventListener('click', async () => {
             modeSelectModal.classList.add('hidden');
             await startPureGyroMode();
