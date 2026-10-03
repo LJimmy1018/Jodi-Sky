@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Jodi Sky - Star Register Edition</title>
-    <!-- 引入 Three.js 3D 引擎與天文計算庫 -->
+    <title>Jodi Sky - Star Register</title>
+    <!-- 引入 3D 引擎 Three.js 與天文引擎 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
     <style>
@@ -25,7 +25,7 @@
             color: #ffffff;
         }
 
-        /* AR 實景後置相機 */
+        /* AR 實景相機畫面 */
         #ar-camera-video {
             position: fixed;
             top: 0;
@@ -44,6 +44,7 @@
             width: 100%;
             height: 100%;
             z-index: 2;
+            will-change: transform;
         }
 
         /* 首次命名儀式彈窗 */
@@ -119,10 +120,10 @@
             box-shadow: 0 4px 18px rgba(37, 99, 235, 0.5);
         }
 
-        /* 頂部極簡標題 (純淨無雜亂按鈕) */
+        /* 頂部極簡標題 (融色無雜項) */
         #hud-top {
             position: fixed;
-            top: 22px;
+            top: 20px;
             left: 0;
             width: 100%;
             z-index: 20;
@@ -134,13 +135,13 @@
         }
 
         .star-title-box {
-            background: rgba(10, 16, 32, 0.82);
+            background: rgba(10, 16, 32, 0.78);
             border: 1px solid rgba(147, 197, 253, 0.25);
             backdrop-filter: blur(12px);
             padding: 8px 22px;
             border-radius: 24px;
             text-align: center;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
             pointer-events: auto;
         }
 
@@ -162,12 +163,11 @@
 
         .skat-badge {
             font-size: 0.95rem;
-            font-weight: 500;
+            font-weight: 600;
             background: linear-gradient(135deg, #a5f3fc 0%, #c4b5fd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 12px rgba(165, 243, 252, 0.6);
-            letter-spacing: 0.5px;
         }
 
         #hud-sub-desc {
@@ -176,48 +176,35 @@
             margin-top: 3px;
         }
 
-        /* 3D 浮動科技準心（無遮擋實體環） */
+        /* 純淨星標（已徹底取消科技藍圈） */
         #star-hud-label {
             position: fixed;
+            top: 0;
+            left: 0;
             pointer-events: none;
             z-index: 15;
-            transform: translate(-50%, -50%);
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: opacity 0.3s;
-        }
-
-        .hud-crosshair {
-            width: 64px;
-            height: 64px;
-            border: 1.5px dashed #38bdf8;
-            border-radius: 50%;
-            animation: spin 14s linear infinite;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+            will-change: transform;
+            transition: opacity 0.2s ease;
         }
 
         .hud-tag {
-            margin-top: 12px;
-            background: rgba(10, 16, 32, 0.9);
-            border: 1px solid #38bdf8;
-            padding: 4px 14px;
-            border-radius: 14px;
-            font-size: 0.8rem;
+            background: rgba(10, 16, 32, 0.85);
+            border: 1px solid rgba(165, 243, 252, 0.7);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.76rem;
             color: #e0f2fe;
             white-space: nowrap;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
             display: flex;
             align-items: center;
             gap: 4px;
         }
 
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* 底部整合控制塢 (Bottom Dock) */
+        /* 📱 底部緊湊美學 Dock 欄（防溢出） */
         #bottom-dock {
             position: fixed;
             bottom: calc(20px + env(safe-area-inset-bottom));
@@ -226,181 +213,131 @@
             z-index: 30;
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(13, 20, 38, 0.88);
+            gap: 6px;
+            background: rgba(13, 20, 38, 0.85);
+            border: 1px solid rgba(147, 197, 253, 0.3);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(147, 197, 253, 0.28);
-            padding: 6px 10px;
+            padding: 5px 8px;
             border-radius: 36px;
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            max-width: 82vw;
         }
 
         .dock-btn {
             background: transparent;
             border: none;
             color: #cbd5e1;
-            padding: 9px 14px;
-            border-radius: 24px;
-            font-size: 0.78rem;
-            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.76rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             cursor: pointer;
-            transition: all 0.2s;
             white-space: nowrap;
         }
 
         .dock-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.94);
         }
 
-        /* 主按鈕：我的星星 (粉藍漸變) */
         #dock-my-star {
             background: linear-gradient(135deg, rgba(236, 72, 153, 0.9), rgba(124, 58, 237, 0.9));
             color: #ffffff;
             font-weight: 600;
+            padding: 8px 14px;
             box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
         }
 
-        #dock-ar.ar-active {
+        .dock-btn.ar-active {
             background: linear-gradient(135deg, #059669, #10b981);
             color: #ffffff;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
         }
 
-        /* 點選其他星星的專屬資訊彈出卡 */
-        #star-detail-popover {
+        /* 📍 獨立圓形焦點按鈕（右下角懸浮） */
+        #recenter-fab {
+            position: fixed;
+            bottom: calc(20px + env(safe-area-inset-bottom));
+            right: 16px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1.5px solid rgba(147, 197, 253, 0.4);
+            backdrop-filter: blur(12px);
+            color: #ffb6c1;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(244, 114, 182, 0.3);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        #recenter-fab:active {
+            transform: scale(0.9);
+            background: rgba(30, 58, 138, 0.8);
+        }
+
+        /* 星空漫遊點選彈卡 */
+        #star-info-popup {
             position: fixed;
             bottom: calc(85px + env(safe-area-inset-bottom));
             left: 50%;
             transform: translateX(-50%);
             z-index: 35;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(147, 197, 253, 0.4);
+            backdrop-filter: blur(14px);
+            border-radius: 20px;
+            padding: 14px 18px;
             width: 88%;
             max-width: 320px;
-            background: rgba(15, 23, 42, 0.92);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(147, 197, 253, 0.35);
-            border-radius: 20px;
-            padding: 16px 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
             display: none;
-            animation: slideUpFade 0.3s ease;
+            animation: popUp 0.3s ease;
         }
 
-        @keyframes slideUpFade {
+        @keyframes popUp {
             from { opacity: 0; transform: translate(-50%, 15px); }
             to { opacity: 1; transform: translate(-50%, 0); }
         }
 
-        .popover-header {
+        .popup-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
+            margin-bottom: 8px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 6px;
         }
 
-        .popover-title {
-            font-size: 1.05rem;
-            color: #e0f2fe;
+        .popup-title {
+            font-size: 1rem;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            color: #a5f3fc;
         }
 
-        .popover-close {
-            background: rgba(255, 255, 255, 0.1);
+        .popup-close {
+            background: none;
             border: none;
             color: #94a3b8;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
+            font-size: 1.1rem;
             cursor: pointer;
-            font-size: 0.9rem;
         }
 
-        .star-specs-grid {
+        .popup-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px 12px;
+            gap: 6px 12px;
             font-size: 0.78rem;
         }
 
-        .spec-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .spec-label {
-            color: #94a3b8;
-            font-size: 0.68rem;
-            margin-bottom: 2px;
-        }
-
-        .spec-value {
-            color: #e2e8f0;
-            font-weight: 600;
-        }
-
-        /* 相機權限異常指引彈窗 */
-        #camera-perm-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 150;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            background: rgba(2, 4, 12, 0.88);
-            backdrop-filter: blur(14px);
-            padding: 20px;
-        }
-
-        .perm-card {
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid rgba(244, 114, 182, 0.4);
-            border-radius: 24px;
-            padding: 26px 20px;
-            max-width: 330px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
-        }
-
-        .perm-card h3 {
-            font-size: 1.15rem;
-            color: #fbcfe8;
-            margin-bottom: 12px;
-        }
-
-        .perm-card p {
-            font-size: 0.82rem;
-            color: #cbd5e1;
-            line-height: 1.6;
-            margin-bottom: 16px;
-            text-align: left;
-            background: rgba(30, 41, 59, 0.5);
-            padding: 12px;
-            border-radius: 14px;
-        }
-
-        .perm-btn {
-            background: linear-gradient(135deg, #ec4899, #8b5cf6);
-            border: none;
-            color: white;
-            padding: 10px 24px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .popup-label { color: #94a3b8; font-size: 0.7rem; }
+        .popup-val { color: #f1f5f9; font-weight: 500; }
 
         /* 星星休息提醒彈窗 */
         #resting-modal {
@@ -436,12 +373,13 @@
             font-size: 0.95rem; color: #f1f5f9; line-height: 1.7; margin-bottom: 22px;
             background: rgba(30, 41, 59, 0.6); padding: 14px; border-radius: 16px; border-left: 3px solid #ffd700; text-align: left;
         }
+
         .resting-btn {
             background: linear-gradient(135deg, #2563eb, #3b82f6); border: none; color: white;
             padding: 12px 28px; border-radius: 25px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
         }
 
-        /* 📍 手動設定觀測地點彈窗 */
+        /* 📍 地點選擇彈窗（含富國島置頂） */
         #location-modal {
             position: fixed;
             top: 0;
@@ -483,6 +421,13 @@
             font-size: 0.76rem;
             text-align: center;
             cursor: pointer;
+        }
+
+        .city-chip.highlight {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            border-color: #38bdf8;
+            color: #ffffff;
+            font-weight: 600;
         }
 
         .city-chip:active { background: #2563eb; color: #ffffff; }
@@ -547,10 +492,7 @@
     </style>
 </head>
 <body>
-    <!-- 手機 AR 真實相機畫面 -->
     <video id="ar-camera-video" playsinline autoplay muted></video>
-
-    <!-- 3D 渲染層 -->
     <div id="canvas-container"></div>
 
     <!-- 首次命名介面 -->
@@ -563,7 +505,7 @@
         </div>
     </div>
 
-    <!-- 頂部資訊列 (極簡主題融色) -->
+    <!-- 頂部資訊列 -->
     <div id="hud-top" class="hidden">
         <div class="star-title-box">
             <div class="main-star-heading">
@@ -574,72 +516,58 @@
         </div>
     </div>
 
-    <!-- 3D 浮動標記與科技準心（純淨無實體環） -->
-    <div id="star-hud-label" class="hidden">
-        <div class="hud-crosshair"></div>
-        <div class="hud-tag">
-            <span>🎯</span>
-            <strong><span id="label-name">Jodi</span> <span style="color:#a5f3fc;">(Skat)</span></strong>
-        </div>
-    </div>
-
-    <!-- 點擊其他星星的輕量探索彈卡 -->
-    <div id="star-detail-popover">
-        <div class="popover-header">
-            <div class="popover-title">
-                <span>🌟</span>
-                <span id="pop-star-name">天狼星 Sirius</span>
-            </div>
-            <button class="popover-close" id="popover-close-btn">✕</button>
-        </div>
-        <div class="star-specs-grid">
-            <div class="spec-item">
-                <span class="spec-label">距離地球</span>
-                <span class="spec-value" id="pop-star-dist">8.6 光年</span>
-            </div>
-            <div class="spec-item">
-                <span class="spec-label">所屬天區</span>
-                <span class="spec-value" id="pop-star-const">大犬座</span>
-            </div>
-            <div class="spec-item" style="grid-column: span 2;">
-                <span class="spec-label">存在時間 / 年齡</span>
-                <span class="spec-value" id="pop-star-age">約 2.4 億年</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- 📱 底部一體化懸浮控制塢 (Bottom Dock) -->
+    <!-- 底部精簡美學 Dock (防溢出) -->
     <div id="bottom-dock" class="hidden">
+        <button class="dock-btn" id="open-loc-btn">
+            <span>📍</span>
+            <span id="dock-city-name">香港</span>
+        </button>
+
         <button class="dock-btn" id="dock-my-star">
             <span>⭐</span>
             <span>我的星星</span>
         </button>
-        <button class="dock-btn" id="dock-ar">
-            <span id="dock-ar-icon">📷</span>
-            <span id="dock-ar-text">AR 實景</span>
-        </button>
-        <button class="dock-btn" id="dock-loc">
-            <span>📍</span>
-            <span id="dock-city-text">地點</span>
-        </button>
-        <button class="dock-btn" id="dock-recenter">
-            <span>🎯</span>
-            <span>對準 Jodi</span>
+
+        <button class="dock-btn" id="toggle-ar-btn">
+            <span id="ar-icon">📷</span>
+            <span id="ar-text">AR 尋星</span>
         </button>
     </div>
 
-    <!-- 相機權限異常輔助引導視窗 -->
-    <div id="camera-perm-modal">
-        <div class="perm-card">
-            <h3>📷 需要開啟相機授權</h3>
-            <p>
-                <strong>📱 iPhone (iOS) 用戶：</strong><br>
-                1. 點擊瀏覽器網址列左側的 <b>「aA」</b> 或前往手機「設定」>「Safari」>「相機」。<br>
-                2. 將權限更改為 <b>「允許」</b> 後重新整理。<br><br>
-                <strong>🤖 Android 用戶：</strong><br>
-                點擊網址列旁的 <b>「🔒 鎖頭圖標」</b> > 開啟相機權限。
-            </p>
-            <button class="perm-btn" id="close-perm-guide-btn">我知道了，以陀螺儀全景繼續</button>
+    <!-- 📍 圓形獨立焦點按鈕 (點擊自動平滑對準 Jodi) -->
+    <button id="recenter-fab" class="hidden" title="對準 Jodi">📍</button>
+
+    <!-- 純淨無遮擋星標 (已取消科技藍圈) -->
+    <div id="star-hud-label" class="hidden">
+        <div class="hud-tag">
+            <span>💖</span>
+            <strong><span id="label-name">Jodi</span> <span style="color:#a5f3fc;">(Skat)</span></strong>
+        </div>
+    </div>
+
+    <!-- 點選任意行星時的輕量資訊浮窗 -->
+    <div id="star-info-popup">
+        <div class="popup-header">
+            <span class="popup-title" id="pop-star-name">北落師門 Fomalhaut</span>
+            <button class="popup-close" id="pop-close-btn">✕</button>
+        </div>
+        <div class="popup-grid">
+            <div>
+                <div class="popup-label">距離地球</div>
+                <div class="popup-val" id="pop-star-dist">約 25.1 光年</div>
+            </div>
+            <div>
+                <div class="popup-label">天空位置</div>
+                <div class="popup-val" id="pop-star-pos">南魚座 · 赤經 22h</div>
+            </div>
+            <div>
+                <div class="popup-label">存在時間</div>
+                <div class="popup-val" id="pop-star-age">約 4.4 億年</div>
+            </div>
+            <div>
+                <div class="popup-label">視星等</div>
+                <div class="popup-val" id="pop-star-mag">+1.17 mag</div>
+            </div>
         </div>
     </div>
 
@@ -655,29 +583,28 @@
         </div>
     </div>
 
-    <!-- 📍 手動設定觀測地點彈窗 -->
+    <!-- 📍 地點選擇彈窗 (富國島置頂) -->
     <div id="location-modal" class="hidden">
         <div class="location-card">
-            <h3 style="font-size: 1.15rem; color: #e0f2fe; margin-bottom: 8px;">📍 設定觀測地點</h3>
-            <p style="font-size: 0.78rem; color: #94a3b8;">選擇所在城市，精確預報肉眼觀星時間：</p>
+            <h3 style="font-size: 1.15rem; color: #e0f2fe; margin-bottom: 6px;">📍 設定觀測地點</h3>
+            <p style="font-size: 0.78rem; color: #94a3b8;">時間將自動切換為當地時區：</p>
             
-            <button id="btn-retry-gps" style="width: 100%; margin: 12px 0 6px; background: rgba(30, 58, 138, 0.5); border: 1px dashed rgba(147, 197, 253, 0.5); color: #93c5fd; padding: 9px; border-radius: 14px; font-size: 0.8rem; cursor: pointer;">📡 重新使用手機 GPS 衛星定位</button>
+            <button id="btn-retry-gps" style="width: 100%; margin: 12px 0 6px; background: rgba(30, 58, 138, 0.5); border: 1px dashed rgba(147, 197, 253, 0.5); color: #93c5fd; padding: 9px; border-radius: 14px; font-size: 0.8rem; cursor: pointer;">📡 使用手機 GPS 定位 (自動識別時區)</button>
 
             <div class="city-chips-grid">
-                <div class="city-chip" data-name="香港" data-lat="22.3193" data-lon="114.1694">香港</div>
-                <div class="city-chip" data-name="台北" data-lat="25.0330" data-lon="121.5654">台北</div>
-                <div class="city-chip" data-name="東京" data-lat="35.6762" data-lon="139.6503">東京</div>
-                <div class="city-chip" data-name="倫敦" data-lat="51.5074" data-lon="-0.1278">倫敦</div>
-                <div class="city-chip" data-name="紐約" data-lat="40.7128" data-lon="-74.0060">紐約</div>
-                <div class="city-chip" data-name="新加坡" data-lat="1.3521" data-lon="103.8198">新加坡</div>
-                <div class="city-chip" data-name="悉尼" data-lat="-33.8688" data-lon="151.2093">悉尼</div>
-                <div class="city-chip" data-name="巴黎" data-lat="48.8566" data-lon="2.3522">巴黎</div>
-                <div class="city-chip" data-name="溫哥華" data-lat="49.2827" data-lon="-123.1207">溫哥華</div>
+                <!-- 🏝️ 富國島置頂 -->
+                <div class="city-chip highlight" data-name="富國島" data-lat="10.2899" data-lon="103.9840" data-tz="7">🏝️ 富國島</div>
+                <div class="city-chip" data-name="香港" data-lat="22.3193" data-lon="114.1694" data-tz="8">香港</div>
+                <div class="city-chip" data-name="台北" data-lat="25.0330" data-lon="121.5654" data-tz="8">台北</div>
+                <div class="city-chip" data-name="東京" data-lat="35.6762" data-lon="139.6503" data-tz="9">東京</div>
+                <div class="city-chip" data-name="峴港" data-lat="16.0544" data-lon="108.2022" data-tz="7">峴港</div>
+                <div class="city-chip" data-name="曼谷" data-lat="13.7563" data-lon="100.5018" data-tz="7">曼谷</div>
+                <div class="city-chip" data-name="新加坡" data-lat="1.3521" data-lon="103.8198" data-tz="8">新加坡</div>
+                <div class="city-chip" data-name="倫敦" data-lat="51.5074" data-lon="-0.1278" data-tz="0">倫敦</div>
+                <div class="city-chip" data-name="巴黎" data-lat="48.8566" data-lon="2.3522" data-tz="1">巴黎</div>
             </div>
 
-            <div style="display: flex; gap: 10px; margin-top: 14px;">
-                <button id="btn-cancel-loc" style="width: 100%; background: rgba(255, 255, 255, 0.1); border: none; color: #cbd5e1; padding: 10px; border-radius: 18px; font-size: 0.85rem; cursor: pointer;">關閉</button>
-            </div>
+            <button id="btn-cancel-loc" style="width: 100%; background: rgba(255, 255, 255, 0.1); border: none; color: #cbd5e1; padding: 10px; border-radius: 18px; font-size: 0.85rem; cursor: pointer;">關閉</button>
         </div>
     </div>
 
@@ -689,7 +616,6 @@
                 <button class="close-btn" id="close-sheet-btn">✕</button>
             </div>
 
-            <!-- 太空實拍相片 -->
             <div class="star-photo-card">
                 <img class="star-photo-img" 
                      src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80" 
@@ -698,7 +624,6 @@
                 <div class="photo-badge">📷 望遠鏡深空光學成像 · A3V 白藍主序星</div>
             </div>
 
-            <!-- 實時肉眼目測預報 -->
             <div class="section-title">🔭 實時肉眼目測預報 (<span id="sheet-city-tag">觀測點</span>)</div>
             <div class="forecast-card">
                 <div class="forecast-row">
@@ -706,16 +631,15 @@
                     <span id="forecast-status" class="forecast-val">計算中...</span>
                 </div>
                 <div class="forecast-row">
-                    <span>最佳目測時段</span>
+                    <span>當地最佳時段</span>
                     <span id="forecast-window" class="forecast-val">計算中...</span>
                 </div>
                 <div class="forecast-row">
-                    <span>最佳觀測方向 / 仰角</span>
+                    <span>方向 / 最高仰角</span>
                     <span id="forecast-peak" class="forecast-val">計算中...</span>
                 </div>
             </div>
 
-            <!-- 寓意區塊 -->
             <div class="section-title">💫 Jodi (Skat) 的專屬寓意</div>
             <div class="meaning-box">
                 <strong>【160光年的跨時空守護】</strong><br>
@@ -724,11 +648,10 @@
                 「Skat」源自古阿拉伯語，代表著「恆久步伐」與「心靈祝願」；在東方天宮則位列「羽林軍（危宿四）」，象徵在浩瀚星海中永遠默默護衛著你。
             </div>
 
-            <!-- 即時狀態 -->
             <div class="section-title">📡 當前實時太空狀態</div>
             <div class="status-grid">
                 <div class="status-item">
-                    <div class="status-label">天色狀態</div>
+                    <div class="status-label">當地天色</div>
                     <div class="status-val" id="sheet-sky-darkness">--</div>
                 </div>
                 <div class="status-item">
@@ -752,40 +675,49 @@
     </div>
 
     <script>
-        // --- 1. 天體數據庫 (Star Register 星空探索星群) ---
-        const STAR_CATALOG = [
-            { id: "skat", name: "Skat (Jodi)", ra: 22.9108, dec: -15.8200, dist: "160 光年", constel: "水瓶座", age: "約 5～6 億年", isTarget: true },
-            { id: "sirius", name: "天狼星 (Sirius)", ra: 6.7525, dec: -16.7161, dist: "8.6 光年", constel: "大犬座", age: "約 2.4 億年" },
-            { id: "vega", name: "織女星 (Vega)", ra: 18.6156, dec: 38.7836, dist: "25 光年", constel: "天琴座", age: "約 4.5 億年" },
-            { id: "altair", name: "牛郎星 (Altair)", ra: 19.8464, dec: 8.8683, dist: "16.7 光年", constel: "天鷹座", age: "約 12 億年" },
-            { id: "polaris", name: "北極星 (Polaris)", ra: 2.5303, dec: 89.2641, dist: "433 光年", constel: "小熊座", age: "約 7,000 萬年" },
-            { id: "betelgeuse", name: "參宿四 (Betelgeuse)", ra: 5.9195, dec: 7.4071, dist: "642 光年", constel: "獵戶座", age: "約 1,000 萬年" },
-            { id: "rigel", name: "參宿七 (Rigel)", ra: 5.2423, dec: -8.2016, dist: "860 光年", constel: "獵戶座", age: "約 800 萬年" },
-            { id: "arcturus", name: "大角星 (Arcturus)", ra: 14.2612, dec: 19.1822, dist: "36.7 光年", constel: "牧夫座", age: "約 71 億年" },
-            { id: "aldebaran", name: "畢宿五 (Aldebaran)", ra: 4.5987, dec: 16.5093, dist: "65 光年", constel: "金牛座", age: "約 66 億年" },
-            { id: "sadalmelik", name: "水瓶座α (Sadalmelik)", ra: 22.09, dec: -0.32, dist: "520 光年", constel: "水瓶座", age: "約 5,300 萬年" },
-            { id: "sadalsuud", name: "水瓶座β (Sadalsuud)", ra: 21.52, dec: -5.57, dist: "540 光年", constel: "水瓶座", age: "約 6,000 萬年" }
-        ];
-
+        // --- 1. 天文數據庫 (Skat + Star Register 著名星群) ---
+        const STAR_RA_HOURS = 22.9108; // 22h 54m 39s
+        const STAR_DEC_DEG = -15.8200; // -15° 49' 15"
         const CELESTIAL_RADIUS = 400;
-        let currentLat = 22.3193, currentLon = 114.1694, currentCityName = "香港";
+
+        let currentLat = 22.3193; // 預設香港
+        let currentLon = 114.1694;
+        let currentCityName = "香港";
+        let currentTimezoneOffset = 8; // UTC+8
         let isARMode = false;
         let cameraStream = null;
 
-        // --- 2. Three.js 3D 宇宙場景構建 ---
+        const CELESTIAL_STARS = [
+            { name: "北落師門 (Fomalhaut)", ra: 22.96, dec: -29.62, dist: "25.1 光年", pos: "南魚座 α 星", age: "約 4.4 億年", mag: "+1.17" },
+            { name: "虛宿一 (Sadalsuud)", ra: 21.52, dec: -5.57, dist: "540 光年", pos: "水瓶座 β 星", age: "約 6,000 萬年", mag: "+2.87" },
+            { name: "危宿一 (Sadalmelik)", ra: 22.09, dec: -0.32, dist: "520 光年", pos: "水瓶座 α 星", age: "約 5,300 萬年", mag: "+2.95" },
+            { name: "織女星 (Vega)", ra: 18.61, dec: 38.78, dist: "25.0 光年", pos: "天琴座 α 星", age: "約 4.5 億年", mag: "+0.03" },
+            { name: "牛郎星 (Altair)", ra: 19.84, dec: 8.87, dist: "16.7 光年", pos: "天鷹座 α 星", age: "約 12 億年", mag: "+0.77" },
+            { name: "天津四 (Deneb)", ra: 20.69, dec: 45.28, dist: "2,600 光年", pos: "天鵝座 α 星", age: "約 1,000 萬年", mag: "+1.25" },
+            { name: "天狼星 (Sirius)", ra: 6.75, dec: -16.72, dist: "8.6 光年", pos: "大犬座 α 星", age: "約 2.3 億年", mag: "-1.46" },
+            { name: "參宿四 (Betelgeuse)", ra: 5.92, dec: 7.41, dist: "640 光年", pos: "獵戶座 α 星", age: "約 1,000 萬年", mag: "+0.50" },
+            { name: "北極星 (Polaris)", ra: 2.53, dec: 89.26, dist: "433 光年", pos: "小熊座 α 星", age: "約 7,000 萬年", mag: "+1.98" }
+        ];
+
+        // --- 2. ⚡ 120Hz 高性能 ProMotion 渲染引擎架構 ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
 
         const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 2000);
         camera.position.set(0, 0, 0);
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        const renderer = new THREE.WebGLRenderer({ 
+            antialias: true, 
+            alpha: true, 
+            powerPreference: "high-performance",
+            precision: "highp"
+        });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // 最佳性能畫質比
         container.appendChild(renderer.domElement);
 
-        // 背景星空 (2200 顆恆星點)
-        const starCount = 2200;
+        // 背景星空 (2000 顆背景弱星)
+        const starCount = 2000;
         const starGeo = new THREE.BufferGeometry();
         const starPos = new Float32Array(starCount * 3);
         const starCols = new Float32Array(starCount * 3);
@@ -803,8 +735,9 @@
         }
         starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
         starGeo.setAttribute('color', new THREE.BufferAttribute(starCols, 3));
+
         const starField = new THREE.Points(starGeo, new THREE.PointsMaterial({
-            size: 1.8, vertexColors: true, transparent: true, opacity: 0.8
+            size: 1.8, vertexColors: true, transparent: true, opacity: 0.75
         }));
         scene.add(starField);
 
@@ -818,12 +751,18 @@
             );
         }
 
-        // --- 創建所有恆星（支援射線點擊互動） ---
-        const interactiveStarMeshes = [];
-        let skatMeshRef = null;
-        let skatInnerGlow = null;
+        // --- 創建目標恆星 Skat（純淨星芒，已徹底取消科技藍圈） ---
+        const skatPos = raDecToVector3(STAR_RA_HOURS, STAR_DEC_DEG, CELESTIAL_RADIUS);
+        
+        const coreMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(6.5, 32, 32),
+            new THREE.MeshBasicMaterial({ color: 0xffffff })
+        );
+        coreMesh.position.copy(skatPos);
+        coreMesh.userData = { isSkat: true };
+        scene.add(coreMesh);
 
-        function createGlowTexture(colorHex) {
+        function createGlowSprite(colorHex, size, opacity) {
             const canvas = document.createElement('canvas');
             canvas.width = 128; canvas.height = 128;
             const ctx = canvas.getContext('2d');
@@ -834,52 +773,30 @@
             grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, 128, 128);
-            return new THREE.CanvasTexture(canvas);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+                map: texture, transparent: true, opacity: opacity, blending: THREE.AdditiveBlending
+            }));
+            sprite.scale.set(size, size, 1);
+            return sprite;
         }
 
-        const skatGlowTex = createGlowTexture('rgba(165, 243, 252, 0.95)');
-        const otherGlowTex = createGlowTexture('rgba(254, 215, 170, 0.7)');
-
-        STAR_CATALOG.forEach(star => {
-            const pos = raDecToVector3(star.ra, star.dec, CELESTIAL_RADIUS);
-            const size = star.isTarget ? 6.5 : 4.0;
-            
-            const starMesh = new THREE.Mesh(
-                new THREE.SphereGeometry(size, 24, 24),
-                new THREE.MeshBasicMaterial({ color: star.isTarget ? 0xffffff : 0xffedd5 })
-            );
-            starMesh.position.copy(pos);
-            starMesh.userData = star;
-
-            // 光暈精靈
-            const glowSprite = new THREE.Sprite(new THREE.SpriteMaterial({
-                map: star.isTarget ? skatGlowTex : otherGlowTex,
-                transparent: true,
-                blending: THREE.AdditiveBlending
-            }));
-            const glowScale = star.isTarget ? 75 : 35;
-            glowSprite.scale.set(glowScale, glowScale, 1);
-            starMesh.add(glowSprite);
-
-            scene.add(starMesh);
-            interactiveStarMeshes.push(starMesh);
-
-            if (star.isTarget) {
-                skatMeshRef = starMesh;
-                skatInnerGlow = glowSprite;
-            }
-        });
+        const innerGlow = createGlowSprite('rgba(165, 243, 252, 0.95)', 75, 0.95);
+        const outerGlow = createGlowSprite('rgba(147, 197, 253, 0.5)', 150, 0.7);
+        coreMesh.add(innerGlow);
+        coreMesh.add(outerGlow);
 
         // 水瓶座連線
-        const aqrStarsCoord = [
+        const aqrStars = [
             [21.52, -5.57], [22.09, -0.32], [22.36, -0.02],
             [22.54, -15.82], [20.79, -9.50], [22.88, -7.78]
         ];
         const lineConnections = [[0, 1], [1, 2], [2, 5], [5, 3], [0, 4]];
         const linePoints = [];
         lineConnections.forEach(([i1, i2]) => {
-            const p1 = raDecToVector3(aqrStarsCoord[i1][0], aqrStarsCoord[i1][1], CELESTIAL_RADIUS);
-            const p2 = raDecToVector3(aqrStarsCoord[i2][0], aqrStarsCoord[i2][1], CELESTIAL_RADIUS);
+            const p1 = raDecToVector3(aqrStars[i1][0], aqrStars[i1][1], CELESTIAL_RADIUS);
+            const p2 = raDecToVector3(aqrStars[i2][0], aqrStars[i2][1], CELESTIAL_RADIUS);
             linePoints.push(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
         });
         const lineGeo = new THREE.BufferGeometry();
@@ -888,37 +805,56 @@
             color: 0x38bdf8, transparent: true, opacity: 0.4
         })));
 
-        // --- 3. 視角旋轉與全景漫遊 ---
+        // 著名星群
+        const clickableStarMeshes = [coreMesh];
+        CELESTIAL_STARS.forEach(st => {
+            const pos = raDecToVector3(st.ra, st.dec, CELESTIAL_RADIUS);
+            const mesh = new THREE.Mesh(
+                new THREE.SphereGeometry(4.0, 16, 16),
+                new THREE.MeshBasicMaterial({ color: 0xe0f2fe })
+            );
+            mesh.position.copy(pos);
+            mesh.userData = st;
+            const miniGlow = createGlowSprite('rgba(147, 197, 253, 0.6)', 35, 0.6);
+            mesh.add(miniGlow);
+            scene.add(mesh);
+            clickableStarMeshes.push(mesh);
+        });
+
+        // --- 3. 視角旋轉與 120Hz 零開銷物件預緩存 ---
         let currentPitch = 0, currentYaw = 0;
         let targetPitch = 0, targetYaw = 0;
         let isInteracting = false;
         let startX = 0, startY = 0, startYaw = 0, startPitch = 0;
-        let pointerDownTime = 0;
+        let pointerMoved = false;
+
+        // 預先分配複用向量，避免 120Hz 下引發垃圾回收掉幀 (Zero GC)
+        const _projPos = new THREE.Vector3();
+        const _lookTarget = new THREE.Vector3();
 
         function autoFocusSkat() {
-            if (!skatMeshRef) return;
-            const dir = skatMeshRef.position.clone().normalize();
+            const dir = skatPos.clone().normalize();
             targetPitch = Math.asin(dir.y) * (180 / Math.PI);
             targetYaw = Math.atan2(dir.x, dir.z) * (180 / Math.PI);
         }
 
-        // 觸控點擊與射線檢測
-        const raycaster = new THREE.Raycaster();
-        const touchPos = new THREE.Vector2();
-
         window.addEventListener('pointerdown', (e) => {
             if (isARMode || e.target.closest('#my-star-modal') || e.target.closest('#resting-modal') || 
                 e.target.closest('#naming-modal') || e.target.closest('#location-modal') || 
-                e.target.closest('#bottom-dock') || e.target.closest('#star-detail-popover') || e.target.closest('#camera-perm-modal')) return;
+                e.target.closest('#bottom-dock') || e.target.closest('#recenter-fab') || 
+                e.target.closest('#star-info-popup')) return;
             
             isInteracting = true;
+            pointerMoved = false;
             startX = e.clientX; startY = e.clientY;
             startYaw = currentYaw; startPitch = currentPitch;
-            pointerDownTime = Date.now();
         });
 
         window.addEventListener('pointermove', (e) => {
             if (!isInteracting || isARMode) return;
+            const dist = Math.hypot(e.clientX - startX, e.clientY - startY);
+            if (dist > 6) pointerMoved = true;
+
             const deltaX = (e.clientX - startX) * 0.18;
             const deltaY = (e.clientY - startY) * 0.18;
             targetYaw = startYaw - deltaX;
@@ -928,47 +864,59 @@
         window.addEventListener('pointerup', (e) => {
             if (!isInteracting) return;
             isInteracting = false;
-            
-            // 判斷是否為點擊操作 (非滑動)
-            const dist = Math.hypot(e.clientX - startX, e.clientY - startY);
-            if (dist < 6 && (Date.now() - pointerDownTime) < 300) {
-                checkStarSelection(e.clientX, e.clientY);
+            if (!pointerMoved && !isARMode) {
+                checkStarClick(e.clientX, e.clientY);
             }
         });
 
-        // 射線選取星星
-        function checkStarSelection(clientX, clientY) {
-            touchPos.x = (clientX / window.innerWidth) * 2 - 1;
-            touchPos.y = -(clientY / window.innerHeight) * 2 + 1;
-            raycaster.setFromCamera(touchPos, camera);
+        // 點擊星星查詢
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
 
-            const intersects = raycaster.intersectObjects(interactiveStarMeshes);
+        function checkStarClick(clientX, clientY) {
+            mouse.x = (clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            raycaster.params.Points = { threshold: 15 };
+            const intersects = raycaster.intersectObjects(clickableStarMeshes, false);
+
             if (intersects.length > 0) {
-                const selectedStar = intersects[0].object.userData;
-                if (selectedStar.isTarget) {
-                    // 點到 Jodi (Skat) 直接開啟詳細抽屜
-                    document.getElementById('my-star-modal').classList.remove('hidden');
+                const target = intersects[0].object;
+                if (target.userData.isSkat) {
+                    showStarInfoPopup({
+                        name: `Jodi (Skat) · 水瓶座 δ 星`,
+                        dist: "約 160 光年",
+                        pos: "水瓶座 · 赤經 22h 54m",
+                        age: "約 5～6 億年",
+                        mag: "+3.27 mag"
+                    });
                 } else {
-                    // 點到其他行星展示 4 大資訊
-                    showOtherStarDetail(selectedStar);
+                    showStarInfoPopup(target.userData);
                 }
             }
         }
 
-        const popover = document.getElementById('star-detail-popover');
-        function showOtherStarDetail(star) {
-            document.getElementById('pop-star-name').textContent = star.name;
-            document.getElementById('pop-star-dist').textContent = star.dist;
-            document.getElementById('pop-star-const').textContent = star.constel;
-            document.getElementById('pop-star-age').textContent = star.age;
-            popover.style.display = 'block';
+        const infoPopup = document.getElementById('star-info-popup');
+        function showStarInfoPopup(data) {
+            document.getElementById('pop-star-name').textContent = data.name;
+            document.getElementById('pop-star-dist').textContent = data.dist;
+            document.getElementById('pop-star-pos').textContent = data.pos;
+            document.getElementById('pop-star-age').textContent = data.age;
+            document.getElementById('pop-star-mag').textContent = data.mag;
+            infoPopup.style.display = 'block';
         }
 
-        document.getElementById('popover-close-btn').addEventListener('click', () => {
-            popover.style.display = 'none';
+        document.getElementById('pop-close-btn').addEventListener('click', () => {
+            infoPopup.style.display = 'none';
         });
 
-        // --- 4. 渲染循環 ---
+        // 點擊獨立圓形 📍 焦點按鈕
+        document.getElementById('recenter-fab').addEventListener('click', () => {
+            infoPopup.style.display = 'none';
+            autoFocusSkat();
+        });
+
+        // --- 4. ⚡ 120FPS 渲染循環與 GPU Translate3d 加速 ---
         const clock = new THREE.Clock();
         const starHudLabel = document.getElementById('star-hud-label');
 
@@ -976,45 +924,40 @@
             requestAnimationFrame(animate);
             const elapsed = clock.getElapsedTime();
 
-            // Skat 光暈呼吸
-            if (skatInnerGlow) {
-                const pulse = 1 + Math.sin(elapsed * 2.8) * 0.12;
-                skatInnerGlow.scale.set(75 * pulse, 75 * pulse, 1);
-            }
+            // 恆星光暈呼吸
+            const pulse = 1 + Math.sin(elapsed * 2.8) * 0.12;
+            innerGlow.scale.set(75 * pulse, 75 * pulse, 1);
 
             if (!isARMode) {
-                currentYaw += (targetYaw - currentYaw) * 0.08;
-                currentPitch += (targetPitch - currentPitch) * 0.08;
+                currentYaw += (targetYaw - currentYaw) * 0.1;
+                currentPitch += (targetPitch - currentPitch) * 0.1;
 
                 const pitchRad = THREE.MathUtils.degToRad(currentPitch);
                 const yawRad = THREE.MathUtils.degToRad(currentYaw);
 
-                const lookDir = new THREE.Vector3(
+                _lookTarget.set(
                     Math.cos(pitchRad) * Math.sin(yawRad),
                     Math.sin(pitchRad),
                     Math.cos(pitchRad) * Math.cos(yawRad)
                 );
-                camera.lookAt(lookDir);
+                camera.lookAt(_lookTarget);
             }
 
-            updateHUD();
+            // 更新星標 (使用 GPU translate3d，零 DOM 重排)
+            updateHUDOptimized();
             renderer.render(scene, camera);
         }
 
-        function updateHUD() {
-            if (!skatMeshRef) return;
-            const p = skatMeshRef.position.clone();
-            p.project(camera);
+        function updateHUDOptimized() {
+            _projPos.copy(coreMesh.position).project(camera);
 
-            const isBehind = p.z > 1;
-            const screenX = (p.x * 0.5 + 0.5) * window.innerWidth;
-            const screenY = (-(p.y * 0.5) + 0.5) * window.innerHeight;
-
-            const inView = !isBehind && p.x >= -0.9 && p.x <= 0.9 && p.y >= -0.9 && p.y <= 0.9;
+            const isBehind = _projPos.z > 1;
+            const inView = !isBehind && _projPos.x >= -0.85 && _projPos.x <= 0.85 && _projPos.y >= -0.85 && _projPos.y <= 0.85;
 
             if (inView) {
-                starHudLabel.style.left = `${screenX}px`;
-                starHudLabel.style.top = `${screenY}px`;
+                const screenX = (_projPos.x * 0.5 + 0.5) * window.innerWidth;
+                const screenY = (-(_projPos.y * 0.5) + 0.5) * window.innerHeight;
+                starHudLabel.style.transform = `translate3d(${screenX}px, ${screenY - 25}px, 0) translate(-50%, -50%)`;
                 starHudLabel.style.opacity = '1';
             } else {
                 starHudLabel.style.opacity = '0';
@@ -1029,10 +972,11 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // --- 5. 首次命名流程 ---
+        // --- 5. 命名流程 ---
         const namingModal = document.getElementById('naming-modal');
         const hudTop = document.getElementById('hud-top');
         const bottomDock = document.getElementById('bottom-dock');
+        const recenterFab = document.getElementById('recenter-fab');
         const enterBtn = document.getElementById('enter-btn');
         const nameInput = document.getElementById('name-input');
         const starOwnerName = document.getElementById('star-owner-name');
@@ -1060,6 +1004,7 @@
                 namingModal.classList.add('hidden');
                 hudTop.classList.remove('hidden');
                 bottomDock.classList.remove('hidden');
+                recenterFab.classList.remove('hidden');
                 starHudLabel.classList.remove('hidden');
             }, 600);
 
@@ -1067,12 +1012,11 @@
             initLocationSystem();
         }
 
-        // --- 6. 📷 AR 實景模式與相機授權容錯 ---
-        const dockArBtn = document.getElementById('dock-ar');
+        // --- 6. AR 相機模式 ---
+        const toggleArBtn = document.getElementById('toggle-ar-btn');
         const arVideo = document.getElementById('ar-camera-video');
-        const cameraPermModal = document.getElementById('camera-perm-modal');
 
-        dockArBtn.addEventListener('click', async () => {
+        toggleArBtn.addEventListener('click', async () => {
             if (!isARMode) {
                 await startARMode();
             } else {
@@ -1081,28 +1025,32 @@
         });
 
         async function startARMode() {
-            // 啟用陀螺儀方向感測
-            enableDeviceOrientation();
-
             try {
+                if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    const permission = await DeviceOrientationEvent.requestPermission();
+                    if (permission === 'granted') {
+                        window.addEventListener('deviceorientation', handleDeviceOrientation, true);
+                    }
+                } else {
+                    window.addEventListener('deviceorientation', handleDeviceOrientation, true);
+                }
+
                 cameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { ideal: "environment" } }
+                    video: { facingMode: { ideal: "environment" } },
+                    audio: false
                 });
                 arVideo.srcObject = cameraStream;
                 arVideo.style.display = 'block';
 
                 isARMode = true;
-                dockArBtn.classList.add('ar-active');
-                document.getElementById('dock-ar-icon').textContent = '🌌';
-                document.getElementById('dock-ar-text').textContent = '關閉 AR';
+                toggleArBtn.classList.add('ar-active');
+                document.getElementById('ar-icon').textContent = '🌌';
+                document.getElementById('ar-text').textContent = '退出 AR';
                 starField.visible = false;
+
             } catch (err) {
-                // 相機授權失敗時，展示輔助說明，並自動降級為純陀螺儀實景
-                cameraPermModal.style.display = 'flex';
-                isARMode = true;
-                dockArBtn.classList.add('ar-active');
-                document.getElementById('dock-ar-icon').textContent = '🧭';
-                document.getElementById('dock-ar-text').textContent = '陀螺儀中';
+                alert("如需使用 AR 尋星，請前往手機「設定」允許瀏覽器的「相機與動作」權限。");
+                stopARMode();
             }
         }
 
@@ -1115,27 +1063,11 @@
             window.removeEventListener('deviceorientation', handleDeviceOrientation, true);
 
             isARMode = false;
-            dockArBtn.classList.remove('ar-active');
-            document.getElementById('dock-ar-icon').textContent = '📷';
-            document.getElementById('dock-ar-text').textContent = 'AR 實景';
+            toggleArBtn.classList.remove('ar-active');
+            document.getElementById('ar-icon').textContent = '📷';
+            document.getElementById('ar-text').textContent = 'AR 尋星';
             starField.visible = true;
             autoFocusSkat();
-        }
-
-        document.getElementById('close-perm-guide-btn').addEventListener('click', () => {
-            cameraPermModal.style.display = 'none';
-        });
-
-        function enableDeviceOrientation() {
-            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-                DeviceOrientationEvent.requestPermission().then(res => {
-                    if (res === 'granted') {
-                        window.addEventListener('deviceorientation', handleDeviceOrientation, true);
-                    }
-                }).catch(() => {});
-            } else {
-                window.addEventListener('deviceorientation', handleDeviceOrientation, true);
-            }
         }
 
         function handleDeviceOrientation(e) {
@@ -1146,15 +1078,15 @@
             const yawRad = THREE.MathUtils.degToRad(-alpha - 90);
             const pitchRad = THREE.MathUtils.degToRad(beta - 90);
 
-            const lookDir = new THREE.Vector3(
+            _lookTarget.set(
                 Math.cos(pitchRad) * Math.sin(yawRad),
                 Math.sin(pitchRad),
                 Math.cos(pitchRad) * Math.cos(yawRad)
             );
-            camera.lookAt(lookDir);
+            camera.lookAt(_lookTarget);
         }
 
-        // --- 7. 天文計算與地點邏輯 ---
+        // --- 7. 🏝️ 跨時區真實天文算法 (富國島 UTC+7 vs 香港 UTC+8) ---
         function getSunAltitude(date, observer) {
             const sunEqu = Astronomy.Equator(Astronomy.Body.Sun, date, observer, true, true);
             const sunHor = Astronomy.Horizon(date, observer, sunEqu.ra, sunEqu.dec, 'normal');
@@ -1162,7 +1094,7 @@
         }
 
         function getStarPosition(date, observer) {
-            const starHor = Astronomy.Horizon(date, observer, STAR_CATALOG[0].ra, STAR_CATALOG[0].dec, 'normal');
+            const starHor = Astronomy.Horizon(date, observer, STAR_RA_HOURS, STAR_DEC_DEG, 'normal');
             return { altitude: starHor.altitude, azimuth: starHor.azimuth };
         }
 
@@ -1203,12 +1135,22 @@
             return { windowStart, windowEnd, peakTime, maxAlt, peakAz };
         }
 
+        // 轉換為目標地點當地時間字串
+        function formatLocalTimeString(dateObj, targetTzOffset) {
+            // 計算目標時區的時間
+            const utc = dateObj.getTime() + (dateObj.getTimezoneOffset() * 60000);
+            const targetTime = new Date(utc + (3600000 * targetTzOffset));
+            const h = targetTime.getHours().toString().padStart(2, '0');
+            const m = targetTime.getMinutes().toString().padStart(2, '0');
+            return { h, m, date: targetTime.getDate(), raw: targetTime };
+        }
+
         function initLocationSystem() {
             const savedLoc = localStorage.getItem('jodi_user_location');
             if (savedLoc) {
                 try {
                     const parsed = JSON.parse(savedLoc);
-                    applyLocationChange(parsed.lat, parsed.lon, parsed.name);
+                    applyLocationChange(parsed.lat, parsed.lon, parsed.name, parsed.tz || 8);
                     return;
                 } catch(e) {}
             }
@@ -1216,22 +1158,34 @@
         }
 
         function tryGPSLocation() {
-            document.getElementById('dock-city-text').textContent = "定位中";
+            document.getElementById('dock-city-name').textContent = "定位中...";
+
             if (!navigator.geolocation) {
-                applyLocationChange(22.3193, 114.1694, "香港");
+                applyLocationChange(22.3193, 114.1694, "香港", 8);
                 return;
             }
+
             navigator.geolocation.getCurrentPosition(
-                (pos) => applyLocationChange(pos.coords.latitude, pos.coords.longitude, "GPS 本地"),
-                () => applyLocationChange(22.3193, 114.1694, "香港"),
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    // 由手機自動判定時區偏移
+                    const autoTz = -new Date().getTimezoneOffset() / 60;
+                    applyLocationChange(lat, lon, "GPS 本地", autoTz);
+                },
+                () => {
+                    applyLocationChange(22.3193, 114.1694, "香港", 8);
+                },
                 { enableHighAccuracy: true, timeout: 8000 }
             );
         }
 
-        function applyLocationChange(lat, lon, name) {
+        function applyLocationChange(lat, lon, name, tzOffset) {
             currentLat = lat; currentLon = lon; currentCityName = name;
-            document.getElementById('dock-city-text').textContent = name;
-            document.getElementById('sheet-city-tag').textContent = name;
+            currentTimezoneOffset = (tzOffset !== undefined) ? tzOffset : 8;
+
+            document.getElementById('dock-city-name').textContent = name;
+            document.getElementById('sheet-city-tag').textContent = `${name} (UTC${currentTimezoneOffset >= 0 ? '+' : ''}${currentTimezoneOffset})`;
             runAstroCalculation(lat, lon, currentStarName);
         }
 
@@ -1256,23 +1210,22 @@
             let timeStringDesc = "";
 
             if (prediction.windowStart && prediction.windowEnd) {
-                const sH = prediction.windowStart.getHours().toString().padStart(2, '0');
-                const sM = prediction.windowStart.getMinutes().toString().padStart(2, '0');
-                const eH = prediction.windowEnd.getHours().toString().padStart(2, '0');
-                const eM = prediction.windowEnd.getMinutes().toString().padStart(2, '0');
-                const isToday = prediction.windowStart.getDate() === now.getDate();
-                const dayStr = isToday ? (prediction.windowStart.getHours() >= 17 ? '今晚' : '今日') : '明日';
+                const sT = formatLocalTimeString(prediction.windowStart, currentTimezoneOffset);
+                const eT = formatLocalTimeString(prediction.windowEnd, currentTimezoneOffset);
+                const nowLocal = formatLocalTimeString(now, currentTimezoneOffset);
+
+                const isToday = sT.date === nowLocal.date;
+                const dayStr = isToday ? (parseInt(sT.h, 10) >= 17 ? '今晚' : '今日') : '明日';
                 
                 let peakStr = "";
                 if (prediction.peakTime) {
-                    const pH = prediction.peakTime.getHours().toString().padStart(2, '0');
-                    const pM = prediction.peakTime.getMinutes().toString().padStart(2, '0');
-                    peakStr = `，最佳時間約 ${pH}:${pM}`;
+                    const pT = formatLocalTimeString(prediction.peakTime, currentTimezoneOffset);
+                    peakStr = `，最佳時間約 ${pT.h}:${pT.m}`;
                     document.getElementById('forecast-peak').textContent = `${getCompassDir(prediction.peakAz)}方 (仰角 ${prediction.maxAlt.toFixed(0)}°)`;
                 }
 
-                timeStringDesc = `${dayStr} ${sH}:${sM} 至 ${eH}:${eM}${peakStr}`;
-                document.getElementById('forecast-window').textContent = `${dayStr} ${sH}:${sM} - ${eH}:${eM}`;
+                timeStringDesc = `${dayStr} ${sT.h}:${sT.m} 至 ${eT.h}:${eT.m}${peakStr} (${currentCityName}時間)`;
+                document.getElementById('forecast-window').textContent = `${dayStr} ${sT.h}:${sT.m} - ${eT.h}:${eT.m}`;
             } else {
                 timeStringDesc = "近期深夜時段";
                 document.getElementById('forecast-window').textContent = "近期夜間巡空";
@@ -1313,18 +1266,9 @@
             return dirs[Math.round(az / 45) % 8];
         }
 
-        // --- 8. 底部導航欄事件綁定 ---
-        document.getElementById('dock-my-star').addEventListener('click', () => {
-            document.getElementById('my-star-modal').classList.remove('hidden');
-        });
-        document.getElementById('close-sheet-btn').addEventListener('click', () => {
-            document.getElementById('my-star-modal').classList.add('hidden');
-        });
-
-        document.getElementById('dock-recenter').addEventListener('click', autoFocusSkat);
-
+        // --- 8. 事件綁定 ---
         const locModal = document.getElementById('location-modal');
-        document.getElementById('dock-loc').addEventListener('click', () => locModal.classList.remove('hidden'));
+        document.getElementById('open-loc-btn').addEventListener('click', () => locModal.classList.remove('hidden'));
         document.getElementById('btn-cancel-loc').addEventListener('click', () => locModal.classList.add('hidden'));
 
         document.querySelectorAll('.city-chip').forEach(chip => {
@@ -1332,8 +1276,10 @@
                 const name = chip.getAttribute('data-name');
                 const lat = parseFloat(chip.getAttribute('data-lat'));
                 const lon = parseFloat(chip.getAttribute('data-lon'));
-                localStorage.setItem('jodi_user_location', JSON.stringify({ lat, lon, name }));
-                applyLocationChange(lat, lon, name);
+                const tz = parseFloat(chip.getAttribute('data-tz') || 8);
+
+                localStorage.setItem('jodi_user_location', JSON.stringify({ lat, lon, name, tz }));
+                applyLocationChange(lat, lon, name, tz);
                 locModal.classList.add('hidden');
             });
         });
@@ -1342,6 +1288,14 @@
             localStorage.removeItem('jodi_user_location');
             locModal.classList.add('hidden');
             tryGPSLocation();
+        });
+
+        // 「我的星星」抽屜視窗
+        const myStarModal = document.getElementById('my-star-modal');
+        document.getElementById('dock-my-star').addEventListener('click', () => myStarModal.classList.remove('hidden'));
+        document.getElementById('close-sheet-btn').addEventListener('click', () => myStarModal.classList.add('hidden'));
+        myStarModal.addEventListener('click', (e) => {
+            if (e.target === myStarModal) myStarModal.classList.add('hidden');
         });
     </script>
 </body>
